@@ -6,8 +6,6 @@
 
 Sieve::Sieve(uint32 last_basic_prime) : m_maybe_primes({1, 5}), m_basic_primes({2, 3}), m_primorial(6)
 {
-  std::vector<uint32> tmp;
-
   uint32 cur_basic_prime = 3;
 
   //Строим решето, наращивая в цикле базовые простые числа
