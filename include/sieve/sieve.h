@@ -24,26 +24,43 @@ using uint64 = uint64_t;
 //Увеличение доли отфильтрованных чисел замедляется с каждым новым базовым простым числом.
 //При этом количество чисел, оставшихся в решете, увеличивается экспоненциально и даже быстрее. Это ограничивает эффективность фильтра.
 //Для примориала 19 при расходе памяти примерно 6,5М удаётся исключить примерно 83% чисел.
-//Решето можно было бы построить во время компиляции, выбрав константное максимальное базовое простое число, но компилятор не справляется с этим
-//уже для примориала 17. К тому же построение во время компиляции идёт очень медленно, а в рантайме мгновенно.
+//Решето можно также строить во время компиляции (см. проект CompileTimeSieve).
 
 class Sieve
 {
 public:
   Sieve(uint32 last_basic_prime);
 
-  //Числа оставшиеся после фильтрации
-  const std::vector<uint32>& maybe_primes();
+  uint32 size()
+  {
+    return m_sieve_numbers.size();
+  }
+
+  std::vector<uint32>::const_iterator cbegin()
+  {
+    return m_sieve_numbers.cbegin();
+  }
+
+  std::vector<uint32>::const_iterator cend()
+  {
+    return m_sieve_numbers.cend();
+  }
 
   //Базовые простые числа от 2 до заданного простого числа
-  const std::vector<uint32>& basic_primes();
+  const std::vector<uint32>& basic_primes()
+  {
+    return m_basic_primes;
+  }
 
   //Интервал, на котором построен фильтр
   //(примориал заданного простого числа)
-  uint32 interval();
+  uint32 interval()
+  {
+    return m_primorial;
+  }
 
 protected:
-  std::vector<uint32> m_maybe_primes; //Числа, оставшиеся после фильтрации
+  std::vector<uint32> m_sieve_numbers; //Числа, оставшиеся после фильтрации
 
   std::vector<uint32> m_basic_primes; //Базовые простые числа
 

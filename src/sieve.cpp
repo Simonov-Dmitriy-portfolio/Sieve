@@ -4,8 +4,17 @@
 
 #include <assert.h>
 
-Sieve::Sieve(uint32 last_basic_prime) : m_maybe_primes({1, 5}), m_basic_primes({2, 3}), m_primorial(6)
+Sieve::Sieve(uint32 last_basic_prime) : m_sieve_numbers({1}), m_basic_primes({2}), m_primorial(2)
 {
+  if (last_basic_prime <= 2)
+    return;
+
+  //Следующий шаг не включён в цикл, поскольку следующее базовое простое число (3)
+  //за пределами примориала (2)
+  m_sieve_numbers.push_back(5);
+  m_basic_primes.push_back(3);
+  m_primorial = 6;
+
   uint32 cur_basic_prime = 3;
 
   //Строим решето, наращивая в цикле базовые простые числа
@@ -14,8 +23,8 @@ Sieve::Sieve(uint32 last_basic_prime) : m_maybe_primes({1, 5}), m_basic_primes({
     std::vector<uint32> tmp;
 
     //Первое число в фильтре всегда 1, второе является следующим базовым простым числом
-    assert(m_maybe_primes[0] == 1);
-    cur_basic_prime = m_maybe_primes[1];
+    assert(m_sieve_numbers[0] == 1);
+    cur_basic_prime = m_sieve_numbers[1];
 
     m_basic_primes.push_back(cur_basic_prime);
 
@@ -33,42 +42,27 @@ Sieve::Sieve(uint32 last_basic_prime) : m_maybe_primes({1, 5}), m_basic_primes({
     m_primorial *= cur_basic_prime;
 
     size_t fi = 0;
-    auto next_prime_factor = m_maybe_primes[fi]; //первый сомножитель для нового базового простого числа (1)
+    auto next_prime_factor = m_sieve_numbers[fi]; //первый сомножитель для нового базового простого числа (1)
 
     for (uint32 base = 0; base < m_primorial; base += tmp_primorial)
     {
-      for (size_t i = 0; i < m_maybe_primes.size(); ++i)
+      for (size_t i = 0; i < m_sieve_numbers.size(); ++i)
       {
-        auto maybe_prime = base + m_maybe_primes[i];
-        if (fi < m_maybe_primes.size() && maybe_prime == cur_basic_prime * next_prime_factor)
+        auto maybe_prime = base + m_sieve_numbers[i];
+        if (fi < m_sieve_numbers.size() && maybe_prime == cur_basic_prime * next_prime_factor)
         {
           //Отфильтровываем (не добавляем) кратное нового простого числа
           //Фиксируем следующий сомножитель нового простого числа
-          next_prime_factor = m_maybe_primes[++fi];
+          next_prime_factor = m_sieve_numbers[++fi];
         }
         else
         {
-          assert(tmp.size() < m_maybe_primes.size() * (cur_basic_prime - 1));
+          assert(tmp.size() < m_sieve_numbers.size() * (cur_basic_prime - 1));
           tmp.push_back(maybe_prime);
         }
       }
     }
-    assert(tmp.size() == m_maybe_primes.size() * (cur_basic_prime - 1));
-    m_maybe_primes = std::move(tmp);
+    assert(tmp.size() == m_sieve_numbers.size() * (cur_basic_prime - 1));
+    m_sieve_numbers = std::move(tmp);
   }
-}
-
-uint32 Sieve::interval()
-{
-  return m_primorial;
-}
-
-const std::vector<uint32>& Sieve::maybe_primes()
-{
-  return m_maybe_primes;
-}
-
-const std::vector<uint32>& Sieve::basic_primes()
-{
-  return m_basic_primes;
 }

@@ -16,7 +16,6 @@ int main()
 
   auto interval = sieve.interval();
   auto& basic_primes = sieve.basic_primes();
-  auto& maybe_primes = sieve.maybe_primes();
 
   assert(interval == 2 * 3 * 5 * 7 * 11 * 13 * 17 * 19);
 
@@ -29,8 +28,8 @@ int main()
 
   uint64 base = (uint64)(dist(dre)) * interval;
 
-  uint32 mpi = 0;
-  auto maybe_prime = base + maybe_primes[mpi];
+  auto sni = sieve.cbegin();
+  auto sieve_num = base + *sni;
 
   uint64 rem;
 
@@ -43,23 +42,23 @@ int main()
         break;
     }
     if (rem == 0) //Число поделилось на базовое простое, значит оно отфильтровано
-      assert(num < maybe_prime);
+      assert(num < sieve_num);
     else
     {
-      assert(num == maybe_prime);
-      if (++mpi < maybe_primes.size())
+      assert(num == sieve_num);
+      if (++sni != sieve.cend())
       {
         //Числа в решете отсортированы по возрастанию
-        assert(maybe_primes[mpi] > maybe_primes[mpi - 1]);
-        maybe_prime = base + maybe_primes[mpi];
+        assert(*sni > *(sni - 1));
+        sieve_num = base + *sni;
       }
     }
   }
 
-  assert(mpi == maybe_primes.size());
+  assert(sni == sieve.cend());
 
   std::cout
-    << maybe_primes.size() << " / " << interval << " ~ " << maybe_primes.size() * 100 / interval << "% left in sieve" << std::endl
+    << sieve.size() << " / " << interval << " ~ " << sieve.size() * 100 / interval << "% left in sieve" << std::endl
     << "ok" << std::endl;
 
   return 0;
